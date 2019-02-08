@@ -79,6 +79,10 @@ export default class SignUp extends React.Component {
       });
   }
 
+  onPressSignIn = async() =>{
+    
+  }
+
   render() {
     const { checked } = this.state;
     return (
@@ -130,7 +134,7 @@ export default class SignUp extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ marginTop: 20, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center', }}
-            onPress={() => this.onPressMakeAccount()}
+            onPress={() => this.onPressSignIn()}
           >
             <Text style={{ color: 'purple' }}>SIGN IN</Text>
           </TouchableOpacity>
