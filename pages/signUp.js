@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button'
 
 export default class SignUp extends React.Component {
 
@@ -20,55 +21,66 @@ export default class SignUp extends React.Component {
     this.state = {
       textEmail: '',
       textPassword: '',
-      textPhoneNumber: ''
+      textPhoneNumber: '',
+      textPortal:'',
     }
   }
 
+  onSelect(index, value) {
+    this.setState({
+      textPortal: value
+    })
+  }
+
+  verifyEmail = async () => {
+    firebase.auth().currentUser.sendEmailVerification()
+      .then(() => {
+        // Verification email sent.
+        console.log("email Verification sent");
+        Alert.alert(
+          'Email Verification',
+          "We've sent a user verification email. Please click the link in your email inbox to be verified as a user",
+          { cancelable: false }
+        )
+      })
+      .catch(function (error) {
+        // Error occurred. Inspect error.code.
+      });
+  }
+
   completeSignUp = async () => {
+    console.log(this.state.textPortal);
+    this.verifyEmail();
     var user = firebase.auth().currentUser;
     firebase.database().ref('users').child(user.uid).child('PhoneNumber').set(this.state.textPhoneNumber);
-    firebase.database().ref('users').child(user.uid).child('Email').set(this.state.email);
+    firebase.database().ref('users').child(user.uid).child('email').set(this.state.textEmail);
+    firebase.database().ref('users').child(user.uid).child('portal').set(this.state.textPortal);
   }
 
 
   onPressMakeAccount = async () => {
+    console.log(this.state.textEmail);
+    console.log(this.state.textPassword);
     await firebase.auth().createUserWithEmailAndPassword(this.state.textEmail, this.state.textPassword)
-    .then(this.completeSignUp)
-    .catch(function (error) {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      if (errorCode == 'auth/weak-password') {
-        alert('The password is too weak.');
-      } else if (errorCode == 'auth/email-already-in-use') {
-        alert('This email already has an account');
-      } else if (errorCode == 'auth/invalid-email') {
-        alert('Please enter a valid email');
-      } else {
-        alert(errorMessage);
-      }
-      //console.log(error);
-    });
-
-
-
-    writeUserData(email,fname,lname){
-      firebase.database().ref('UsersList/').push({
-          email,
-          fname,
-          lname
-      }).then((data)=>{
-          //success callback
-          console.log('data ' , data)
-      }).catch((error)=>{
-          //error callback
-          console.log('error ' , error)
-      })
+      .then(this.completeSignUp)
+      .catch(function (error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode == 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else if (errorCode == 'auth/email-already-in-use') {
+          alert('This email already has an account');
+        } else if (errorCode == 'auth/invalid-email') {
+          alert('Please enter a valid email');
+        } else {
+          alert(errorMessage);
+        }
+        //console.log(error);
+      });
   }
-    //console.log(this.state.textEmail);
-    //console.log(this.state.textPassword);
-  }
-  
+
   render() {
+    const { checked } = this.state;
     return (
       <View>
         <View style={styles.container}>
@@ -77,30 +89,44 @@ export default class SignUp extends React.Component {
         <View>
           <TextInput
             placeholder="Enter Email"
-            style={{ padding: 10, marginTop: 100, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
-            onChangeText={(text) => this.setState({textEmail:text})}
+            style={{ padding: 10, marginTop: 40, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
+            onChangeText={(text) => this.setState({ textEmail: text })}
           />
         </View>
         <View>
           <TextInput
             placeholder="Enter Password"
             style={{ padding: 10, marginTop: 20, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
-            onChangeText={(text) => this.setState({textPassword:text})}
+            onChangeText={(text) => this.setState({ textPassword: text })}
           />
         </View>
         <View>
           <TextInput
             placeholder="Enter Phone Number"
             style={{ padding: 10, marginTop: 20, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
-            onChangeText={(text) => this.setState({textPhoneNumber:text})}
+            onChangeText={(text) => this.setState({ textPhoneNumber: text })}
           />
         </View>
         <View>
+          {/* <View style={styles.container}> */}
+
+            <RadioGroup
+              onSelect={(index, value) => this.onSelect(index, value)}
+            >
+              <RadioButton value={'Student'} style={{marginTop: 20,justifyContent: 'center', alignItems: 'center'}}>
+                <Text>Student</Text>
+              </RadioButton>
+
+              <RadioButton value={'Consultant'} style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text>Consultant</Text>
+              </RadioButton>
+            </RadioGroup>
+          {/* </View> */}
           <TouchableOpacity
-            style={{marginTop: 20, marginLeft: 30, marginRight: 30,justifyContent: 'center', alignItems: 'center',}}
+            style={{ marginTop: 20, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center', }}
             onPress={() => this.onPressMakeAccount()}
           >
-            <Text style={{color: 'purple'}}>MAKE AN ACCOUNT</Text>
+            <Text style={{ color: 'purple' }}>MAKE AN ACCOUNT</Text>
           </TouchableOpacity>
         </View>
       </View>
