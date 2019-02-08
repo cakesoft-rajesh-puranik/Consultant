@@ -128,6 +128,12 @@ export default class SignUp extends React.Component {
           >
             <Text style={{ color: 'purple' }}>MAKE AN ACCOUNT</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={{ marginTop: 20, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center', }}
+            onPress={() => this.onPressMakeAccount()}
+          >
+            <Text style={{ color: 'purple' }}>SIGN IN</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
