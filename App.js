@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
 import SignUp from './pages/signUp';
+import SignIn from './pages/signIn'
+import Profile from './pages/profile'
 import { createStackNavigator,createAppContainer} from 'react-navigation';
 
  // Initialize Firebase
@@ -20,9 +22,10 @@ if (!firebase.apps.length) {
 
 const MainScreen = createStackNavigator(
 {
-  SignUp: { screen: SignUp },   
+  SignUp: { screen: SignUp },  
+  SignIn: { screen: SignIn }, 
+  Profile:{ screen: Profile},
 },);
-
 
 const App = createAppContainer(MainScreen);
 

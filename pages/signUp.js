@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity,Alert } from 'react-native';
 import firebase from 'firebase';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button'
+import SignIn from './signIn'
 
 export default class SignUp extends React.Component {
 
@@ -57,6 +58,9 @@ export default class SignUp extends React.Component {
     firebase.database().ref('users').child(user.uid).child('portal').set(this.state.textPortal);
   }
 
+  componentDidMount(){
+    console.disableYellowBox = true;
+  }
 
   onPressMakeAccount = async () => {
     console.log(this.state.textEmail);
@@ -80,7 +84,8 @@ export default class SignUp extends React.Component {
   }
 
   onPressSignIn = async() =>{
-    
+    console.log('Signin');
+    this.props.navigation.navigate('SignIn');
   }
 
   render() {
