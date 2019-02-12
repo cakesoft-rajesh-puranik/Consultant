@@ -33,9 +33,14 @@ export default class Profile extends React.Component {
     getUser = async () => {
         var userId = await AsyncStorage.getItem('userID');
         await firebase.database().ref('users/'+userId).once('value').then(value => {
+            console.log(value.val())
             console.log(value.val()['email'])
             this.setState({textEmail:value.val()['email'],textPortal:value.val()['portal'],textPhoneNumber:value.val()['PhoneNumber']})
         });
+    }
+
+    onPressAppointment = async() => {
+        this.props.navigation.navigate('Appointment');
     }
 
     render() {
@@ -47,6 +52,13 @@ export default class Profile extends React.Component {
                     <View><Text style={{color:'red'}}>{this.state.textPhoneNumber}</Text></View>
                     <View style={{ marginRight: 10,marginTop:20 }}><Text style={fontsize = 50}>Portal:</Text></View>
                     <View><Text style={{color:'red'}}>{this.state.textPortal}</Text></View>
+
+                    <TouchableOpacity
+                        style={{ marginTop: 20, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center', }}
+                        onPress={() => this.onPressAppointment()}
+                    >
+                    <Text style={{ color: 'purple' }}>Book Appointment</Text>
+                    </TouchableOpacity>
             </View>
         )
     }

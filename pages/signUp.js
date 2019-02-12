@@ -87,7 +87,7 @@ export default class SignUp extends React.Component {
     console.log('Signin');
     this.props.navigation.navigate('SignIn');
   }
-
+  
   render() {
     const { checked } = this.state;
     return (
@@ -143,6 +143,7 @@ export default class SignUp extends React.Component {
           >
             <Text style={{ color: 'purple' }}>SIGN IN</Text>
           </TouchableOpacity>
+
         </View>
       </View>
     );

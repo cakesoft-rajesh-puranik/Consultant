@@ -66,6 +66,7 @@ export default class SignIn extends React.Component {
         <View>
           <TextInput
             placeholder="Enter Password"
+            secureTextEntry={true}
             style={{ padding: 10, marginTop: 20, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
             onChangeText={(text) => this.setState({ textPassword: text })}
           />

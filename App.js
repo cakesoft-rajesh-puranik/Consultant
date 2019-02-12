@@ -4,8 +4,8 @@ import firebase from 'firebase';
 import SignUp from './pages/signUp';
 import SignIn from './pages/signIn'
 import Profile from './pages/profile'
+import Appointment from './pages/appointment'
 import { createStackNavigator,createAppContainer} from 'react-navigation';
-
  // Initialize Firebase
   var config = {
     apiKey: "AIzaSyB5upggL3Ch81UAT9BsX5mXuhE9vyJrhw4",
@@ -22,10 +22,12 @@ if (!firebase.apps.length) {
 
 const MainScreen = createStackNavigator(
 {
-  SignUp: { screen: SignUp },  
+  SignUp: { screen: SignUp },
   SignIn: { screen: SignIn }, 
+  Appointment: { screen: Appointment },   
   Profile:{ screen: Profile},
 },);
+
 
 const App = createAppContainer(MainScreen);
 
