@@ -1,10 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
-import SignUp from './pages/signUp';
-import SignIn from './pages/signIn'
-import Profile from './pages/profile'
-import Appointment from './pages/appointment'
+import SignUp from './app/pages/signUp';
+import SignIn from './app/pages/signIn'
+import Profile from './app/pages/profile'
+import Availability from './app/pages/availability'
+import Appointment from './app/pages/appointment'
+import MakeAppointment from './app/pages/makeAppointment'
 import { createStackNavigator,createAppContainer} from 'react-navigation';
  // Initialize Firebase
   var config = {
@@ -24,7 +26,9 @@ const MainScreen = createStackNavigator(
 {
   SignUp: { screen: SignUp },
   SignIn: { screen: SignIn }, 
+  Availability: { screen: Availability },   
   Appointment: { screen: Appointment },   
+  MakeAppointment: { screen: MakeAppointment },   
   Profile:{ screen: Profile},
 },);
 

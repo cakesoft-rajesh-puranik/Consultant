@@ -19,8 +19,8 @@ export default class SignIn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      textEmail: '',
-      textPassword: '',
+      textEmail: 'Aashish.singh@mailinator.com',
+      textPassword: '123456789',
     }
   }
 

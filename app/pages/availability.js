@@ -13,9 +13,9 @@ import {Calendar} from 'react-native-calendars';
 import MultiSelect from 'react-native-multiple-select';
 import firebase from 'firebase';
 
-export default class Appointment extends Component {
+export default class Availability extends Component {
   static navigationOptions = {
-    title: 'Appointment',
+    title: 'Availability',
     headerStyle: {
         backgroundColor: '#f4511e',
     },
@@ -31,7 +31,6 @@ export default class Appointment extends Component {
       selectedItems : [],
       selectedItemsValue : [],
       selectedDate : '',
-      fixedPrice : '100',
     };
     this.onDayPress = this.onDayPress.bind(this);
   }
@@ -60,57 +59,51 @@ export default class Appointment extends Component {
     console.log(this.state.date);
     console.log(this.state.selectedItems);
     console.log(this.state.fixedPrice);
-    this.addAppointmentData(consultant.uid, this.state.date, this.state.selectedItems, this.state.fixedPrice)
+    for (let time of this.state.selectedItems) {
+      console.log(time);
+      this.addAppointmentData(consultant.uid, this.state.date, time, this.state.fixedPrice)
+  }   
   }
 
-  addAppointmentData(consultant_id, date, selected_items, fixed_price){
-      firebase.database().ref('Appointment').push({
-        consultant_id,
-        date,
-        selected_items,
-        fixed_price
-    }).then(()=>{
-        this.props.navigation.navigate('Profile');
-    }).catch((error)=>{
-       var errorMessage = error.message;
-        alert(errorMessage);
-        console.log('error ' , error)
-    })
-    
-  }
-  
+
+  addAppointmentData(consultant_id, date, slot){
+  firebase.database().ref('consultants').child(consultant_id).child("availabilities").child(date).push({
+    timeSlot: slot,
+  }) 
+}
+
   items  = [{
-    id: '1',
+    id: '09:00am to 10:00am',
     value: '09:00am to 10:00am',
   }, {
-    id: '2',
+    id: '10:00am to 11:00am',
     value: '10:00am to 11:00am',
   }, {
-    id: '3',
+    id: '11:00am to 12:00pm',
     value: '11:00am to 12:00pm',
   }, {
-    id: '4',
+    id: '12:00am to 01:00pm',
     value: '12:00am to 01:00pm',
   },{
-    id: '5',
+    id: '01:00pm to 02:00pm',
     value: '01:00pm to 02:00pm',
   },{
-    id: '6',
+    id: '04:00pm to 05:00pm',
     value: '04:00pm to 05:00pm',
   },{
-    id: '7',
+    id: '05:00am to 06:00am',
     value: '05:00am to 06:00am',
   },{
-    id: '8',
+    id: '06:00pm to 07:00pm',
     value: '06:00pm to 07:00pm',
   },{
-    id: '9',
+    id: '07:00pm to 08:00pm',
     value: '07:00pm to 08:00pm',
   },{
-    id: '10',
+    id: '8:00apm to 09:00pm',
     value: '8:00apm to 09:00pm',
   },{
-    id: '11',
+    id: '09:00pm to 10:00pm',
     value: '09:00pm to 10:00pm',
   },];
 

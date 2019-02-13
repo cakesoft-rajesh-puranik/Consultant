@@ -24,6 +24,7 @@ export default class SignUp extends React.Component {
       textPassword: '',
       textPhoneNumber: '',
       textPortal:'',
+      price:'100',
     }
   }
 
@@ -56,6 +57,7 @@ export default class SignUp extends React.Component {
     firebase.database().ref('users').child(user.uid).child('PhoneNumber').set(this.state.textPhoneNumber);
     firebase.database().ref('users').child(user.uid).child('email').set(this.state.textEmail);
     firebase.database().ref('users').child(user.uid).child('portal').set(this.state.textPortal);
+    firebase.database().ref('users').child(user.uid).child('price').set(this.state.price);
   }
 
   componentDidMount(){

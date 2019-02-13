@@ -21,7 +21,9 @@ export default class Profile extends React.Component {
         this.state = {
             textEmail: " ",
             textPortal: " ",
-            textPhoneNumber: " "
+            textPhoneNumber: " ",
+            textPrice:" ",
+            availabilityORAppointment:"",
         }
     }
 
@@ -35,12 +37,13 @@ export default class Profile extends React.Component {
         await firebase.database().ref('users/'+userId).once('value').then(value => {
             console.log(value.val())
             console.log(value.val()['email'])
-            this.setState({textEmail:value.val()['email'],textPortal:value.val()['portal'],textPhoneNumber:value.val()['PhoneNumber']})
+            var portal = value.val()['portal'];
+            this.setState({textEmail:value.val()['email'],textPortal:value.val()['portal'],textPhoneNumber:value.val()['PhoneNumber'],textPrice:value.val()['price'],availabilityORAppointment:portal==="Consultant"?"Availability":"Book Appointment"})
         });
     }
 
     onPressAppointment = async() => {
-        this.props.navigation.navigate('Appointment');
+        this.state.availabilityORAppointment === "Availability" ? this.props.navigation.navigate('Availability'): this.props.navigation.navigate('Appointment')
     }
 
     render() {
@@ -52,12 +55,14 @@ export default class Profile extends React.Component {
                     <View><Text style={{color:'red'}}>{this.state.textPhoneNumber}</Text></View>
                     <View style={{ marginRight: 10,marginTop:20 }}><Text style={fontsize = 50}>Portal:</Text></View>
                     <View><Text style={{color:'red'}}>{this.state.textPortal}</Text></View>
+                    <View style={{ marginRight: 10,marginTop:20 }}><Text style={fontsize = 50}>Price:</Text></View>
+                    <View><Text style={{color:'red'}}>{this.state.textPrice}</Text></View>
 
                     <TouchableOpacity
                         style={{ marginTop: 20, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center', }}
                         onPress={() => this.onPressAppointment()}
                     >
-                    <Text style={{ color: 'purple' }}>Book Appointment</Text>
+                    <Text style={{ color: 'purple' }}>{this.state.availabilityORAppointment}</Text>
                     </TouchableOpacity>
             </View>
         )
