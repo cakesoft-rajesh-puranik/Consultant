@@ -6,8 +6,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         padding: 10,
-        marginLeft:16,
-        marginRight:16,
+        marginLeft: 16,
+        marginRight: 16,
         marginTop: 8,
         marginBottom: 8,
         borderRadius: 5,
@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     email: {
         fontSize: 16,
         color: '#000',
+        marginTop: 5
     },
     container_text: {
         flex: 1,
@@ -30,10 +31,10 @@ const styles = StyleSheet.create({
     },
 });
 
-const CustomRow = ({ email, PhoneNumber,Price}) => (
-    <View style={styles.container}>     
+const CustomRow = ({ email, PhoneNumber, Price }) => (
+    <View style={styles.container}>
         <View style={styles.container_text}>
-         <Text style={styles.email}>
+            <Text style={styles.email}>
                 Email:
             </Text>
             <Text style={styles.PhoneNumber}>
