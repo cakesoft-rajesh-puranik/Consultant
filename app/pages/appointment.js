@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import firebase from "firebase";
 import CustomRow from "../components/CustomRow";
+import CustomProgressBar from '../components/progressBar';
 
 export default class Appointment extends React.Component {
   static navigationOptions = {
@@ -29,10 +30,12 @@ export default class Appointment extends React.Component {
     super(props);
     this.state = {
       users: [],
+      isProgressBar: false
     };
   }
 
   componentWillMount() {
+    this.setState({ isProgressBar: true });
     this.getConsultants();
   }
 
@@ -56,11 +59,16 @@ export default class Appointment extends React.Component {
         });
       });
     });
+    this.setState({ isProgressBar: false });
   }
 
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.container}>
+          <CustomProgressBar visible={this.state.isProgressBar}></CustomProgressBar>
+          <Text style={fontsize = 50}></Text>
+        </View>
         <FlatList
           data={this.state.users}
           renderItem={({ item }) =>

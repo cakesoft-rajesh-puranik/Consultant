@@ -5,10 +5,12 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  Alert
+  Alert,
+  AsyncStorage
 } from "react-native";
 import firebase from "firebase";
 import DatePicker from "react-native-datepicker";
+import CustomProgressBar from "../components/progressBar";
 
 export default class MakeAppointment extends React.Component {
   static navigationOptions = {
@@ -27,7 +29,8 @@ export default class MakeAppointment extends React.Component {
     this.state = {
       slot: [],
       id: this.props.navigation.state.params.id,
-      selectedDate: ""
+      selectedDate: "",
+      isProgressBar: false
     };
     this.onDayPress = this.onDayPress.bind(this);
   }
@@ -41,6 +44,12 @@ export default class MakeAppointment extends React.Component {
   componentWillMount() {}
 
   getData = async () => {
+    for(var i = this.state.slot.length;i>0;i--){
+      this.state.slot.pop()
+    }
+    this.setState({slot:[]})
+    console.log("cleared "+this.state.slot);
+    this.setState({ isProgressBar: true });
     console.log(this.state.date);
     this.getAppointments(this.state.date);
   };
@@ -57,15 +66,17 @@ export default class MakeAppointment extends React.Component {
         childData.key = childKey;
         console.log(childData.key);
         console.log(childData.timeSlot);
-        const obj = { key: childData.timeSlot, id: childData.key};
+        const obj = { key: childData.timeSlot, id: childData.key };
         const newArray = this.state.slot.slice(); // Create a copy
         newArray.push(obj); // Push the object
         this.setState({ slot: newArray });
-        console.log(this.state.slot);
+        console.log("List "+this.state.slot);
+        this.setState({ isProgressBar: false });
       });
   };
 
   onPressCell = async item => {
+    this.setState({ isProgressBar: true });
     console.log("item " + item.id);
     Alert.alert(
       "Alert",
@@ -84,13 +95,19 @@ export default class MakeAppointment extends React.Component {
       .child(item.id)
       .remove();
     this.getAppointments();
+    this.setState({ isProgressBar: false });
   };
 
   addAppointmentData = async (consultant_id, item) => {
+    var userId = await AsyncStorage.getItem("userID");
+    console.log(userId);
+    console.log(consultant_id);
     await firebase
       .database()
       .ref("bookedAppointment")
       .child(consultant_id)
+      .child("Student")
+      .child(userId)
       .child(this.state.date)
       .push({
         timeSlot: item.key
@@ -100,6 +117,9 @@ export default class MakeAppointment extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <View>
+          <CustomProgressBar visible={this.state.isProgressBar} />
+        </View>
         <View style={{ margin: 5 }}>
           <DatePicker
             date={this.state.date}
@@ -154,6 +174,9 @@ export default class MakeAppointment extends React.Component {
             </TouchableOpacity>
           )}
         />
+        <Text style={{ marginBottom: 20, color: "purple" }}>
+          On Tap of Time Appointment will be booked
+        </Text>
       </View>
     );
   }
