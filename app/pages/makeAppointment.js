@@ -43,14 +43,18 @@ export default class MakeAppointment extends React.Component {
 
   componentWillMount() {}
 
+  startChat = async () => {
+    await AsyncStorage.setItem('consultantId', this.state.id);
+    this.props.navigation.navigate('Conversation');
+  }
+
   getData = async () => {
-    for(var i = this.state.slot.length;i>0;i--){
-      this.state.slot.pop()
-    }
-    this.setState({slot:[]})
-    console.log("cleared "+this.state.slot);
+    // for(var i = this.state.slot.length;i>0;i--){
+    //   this.state.slot.pop()
+    // }
+    // console.log("cleared "+this.state.slot);
     this.setState({ isProgressBar: true });
-    console.log(this.state.date);
+    //console.log(this.state.date);
     this.getAppointments(this.state.date);
   };
 
@@ -64,24 +68,25 @@ export default class MakeAppointment extends React.Component {
         var childKey = snapshot.key;
         var childData = snapshot.val();
         childData.key = childKey;
-        console.log(childData.key);
-        console.log(childData.timeSlot);
+        //console.log(childData.key);
+        //console.log(childData.timeSlot);
         const obj = { key: childData.timeSlot, id: childData.key };
         const newArray = this.state.slot.slice(); // Create a copy
         newArray.push(obj); // Push the object
+        //console.log("Array "+newArray);
         this.setState({ slot: newArray });
-        console.log("List "+this.state.slot);
+        //console.log("List "+this.state.slot);
         this.setState({ isProgressBar: false });
       });
   };
 
   onPressCell = async item => {
     this.setState({ isProgressBar: true });
-    console.log("item " + item.id);
+    //console.log("item " + item.id);
     Alert.alert(
       "Alert",
       "Booked Appointment",
-      [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+      [{ text: "OK", onPress: ()=>{}}],
       { cancelable: false }
     );
 
@@ -100,8 +105,8 @@ export default class MakeAppointment extends React.Component {
 
   addAppointmentData = async (consultant_id, item) => {
     var userId = await AsyncStorage.getItem("userID");
-    console.log(userId);
-    console.log(consultant_id);
+    //console.log(userId);
+    //console.log(consultant_id);
     await firebase
       .database()
       .ref("bookedAppointment")
@@ -165,6 +170,9 @@ export default class MakeAppointment extends React.Component {
 
         <TouchableOpacity onPress={() => this.getData()}>
           <Text style={{ marginTop: 20, color: "purple" }}>Get</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.startChat()}>
+          <Text style={{ marginTop: 20, color: "purple" }}>Chat with consultant</Text>
         </TouchableOpacity>
         <FlatList
           data={this.state.slot}

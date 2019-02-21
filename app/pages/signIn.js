@@ -20,8 +20,8 @@ export default class SignIn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      textEmail: "Aashish.singh@mailinator.com",
-      textPassword: "123456789",
+      textEmail: "nilesh@mailinator.com",
+      textPassword: "abcd1234",
       isProgressBar: false
     }
   }
@@ -50,6 +50,7 @@ export default class SignIn extends React.Component {
       console.log('result ' + result.user.uid)
       this.setState({ isProgressBar: false });
       await AsyncStorage.setItem('userID', result.user.uid);
+      await AsyncStorage.setItem('email', result.user.email);
       this.props.navigation.navigate('Profile');
     }
   }

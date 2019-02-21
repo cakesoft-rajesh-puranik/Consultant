@@ -13,6 +13,7 @@ import Profile from "./app/pages/profile";
 import Availability from "./app/pages/availability";
 import Appointment from "./app/pages/appointment";
 import MakeAppointment from "./app/pages/makeAppointment";
+import Conversation from "./app/pages/conversation";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 // Initialize Firebase
 var config = {
@@ -34,6 +35,7 @@ const MainScreen = createStackNavigator({
   Availability: { screen: Availability },
   Appointment: { screen: Appointment },
   MakeAppointment: { screen: MakeAppointment },
+  Conversation:{screen:Conversation},
   Profile: { screen: Profile }
 });
 

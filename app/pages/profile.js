@@ -95,6 +95,10 @@ export default class Profile extends React.Component {
       : this.props.navigation.navigate("Appointment");
   };
 
+  startChat() {
+    this.props.navigation.navigate("Conversation");
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -157,6 +161,20 @@ export default class Profile extends React.Component {
             {this.state.availabilityORAppointment}
           </Text>
         </TouchableOpacity>
+        {this.state.isPriceVisible ? (
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              marginTop: 20,
+              justifyContent: "center",
+              alignItems: "center",
+              alignSelf: "stretch"
+            }}
+            onPress={() => this.startChat()}
+          >
+            <Text style={{ color: "purple" }}>Chat</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     );
   }
