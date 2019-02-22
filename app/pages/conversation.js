@@ -65,7 +65,7 @@ export default class Conversation extends Component {
   static navigationOptions = {
     title: "Conversation",
     headerStyle: {
-      backgroundColor: "#f4511e"
+      backgroundColor: "#1f43bd"
     },
     headerTintColor: "#fff",
     headerTitleStyle: {
