@@ -17,7 +17,7 @@ export default class Appointment extends React.Component {
   static navigationOptions = {
     title: "Book Appointment",
     headerStyle: {
-      backgroundColor: '#f4511e',
+      backgroundColor: "#1f43bd"
     },
     headerTintColor: "#fff",
     headerTitleStyle: {
@@ -89,7 +89,6 @@ export default class Appointment extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#FCFCFC',
   }
 });

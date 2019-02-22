@@ -14,7 +14,8 @@ import Availability from "./app/pages/availability";
 import Appointment from "./app/pages/appointment";
 import MakeAppointment from "./app/pages/makeAppointment";
 import Conversation from "./app/pages/conversation";
-import { createStackNavigator, createAppContainer } from "react-navigation";
+import SplashScreen from "./app/pages/SplashScreen";
+import { createSwitchNavigator, createStackNavigator, createAppContainer } from "react-navigation";
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyB5upggL3Ch81UAT9BsX5mXuhE9vyJrhw4",
@@ -28,17 +29,30 @@ var config = {
 if (!firebase.apps.length) {
   firebase.initializeApp(config);
 }
-
-const MainScreen = createStackNavigator({
-  SignUp: { screen: SignUp },
+const AuthStack = createStackNavigator({  
   SignIn: { screen: SignIn },
-  Availability: { screen: Availability },
+  SignUp: { screen: SignUp }, });
+const MainScreen = createStackNavigator({
+  Profile: { screen: Profile },
   Appointment: { screen: Appointment },
+  Availability: { screen: Availability },
   MakeAppointment: { screen: MakeAppointment },
   Conversation:{screen:Conversation},
-  Profile: { screen: Profile }
+  
 });
 
-const App = createAppContainer(MainScreen);
+const App = createAppContainer(createSwitchNavigator(
+  {
+    SplashScreen: { screen: SplashScreen },
+    App: MainScreen,
+    Auth: AuthStack,
+  },
+  {
+    initialRouteName: 'SplashScreen',
+  }
+));
+
+//const App = createAppContainer(MainScreen);
 
 export default App;
+

@@ -6,7 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   StatusBar,
-  Button
+  Button,
+  BackHandler,
+  AppState,
 } from "react-native";
 import DatePicker from "react-native-datepicker";
 import { Calendar } from "react-native-calendars";
@@ -17,7 +19,7 @@ export default class Availability extends Component {
   static navigationOptions = {
     title: "Availability",
     headerStyle: {
-      backgroundColor: "#f4511e"
+      backgroundColor: "#1f43bd"
     },
     headerTintColor: "#fff",
     headerTitleStyle: {
@@ -30,21 +32,51 @@ export default class Availability extends Component {
     this.state = {
       selectedItems: [],
       selectedItemsValue: [],
-      selectedDate: ""
+      selectedDate: "",
+      status: true
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.onDayPress = this.onDayPress.bind(this);
   }
+
+  componentDidMount() {
+    console.log('In componentDidMount')
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+    AppState.addEventListener('change', this._handleAppStateChange);
+}
+
+componentWillUnmount() {
+  this.backHandler.remove()
+  AppState.removeEventListener('change', this._handleAppStateChange);
+}
+
+handleAppStateChange = (nextAppState) => {
+  if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+    console.log('App has come to the foreground!')
+    this.checkLoginAuth();
+  }
+  this.setState({appState: nextAppState});
+}
+
+handleBackButtonClick() {
+  this.props.navigation.state.params.updateData(this.state.status);
+  this.props.navigation.goBack();
+  return true;
+}
+
+checkLoginAuth = async () => {
+  const userId = await AsyncStorage.getItem('userID');
+
+  // This will switch to the App screen or Auth screen and this loading
+  // screen will be unmounted and thrown away.
+  this.props.navigation.navigate(userId ? 'App' : 'Auth');
+};
 
   onDayPress(day) {
     this.setState({
       selectedDate: day
     });
     //this.props.navigation.navigate('Slot', { bookingDate : day })
-  }
-
-  _onPressBack() {
-    const { goBack } = this.props.navigation;
-    goBack();
   }
 
   onSelectedItemsChange = selectedItems => {
@@ -197,11 +229,15 @@ export default class Availability extends Component {
           submitButtonColor="#CCC"
           submitButtonText="Submit"
         />
-        <Button
+        <TouchableOpacity style={styles.buttonContainer}
+             onPress={() => this.onPressAddAppointment()}>
+                <Text style={{color : "#FFF"}}>Add Appointment</Text>  
+              </TouchableOpacity>
+        {/* <Button
           onPress={() => this.onPressAddAppointment()}
           title="Add Appointment"
           color="#4285F4"
-        />
+        /> */}
       </View>
     );
   }
@@ -217,5 +253,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#eee",
     height: 350
-  }
+  },
+  buttonContainer: {
+    marginTop:10,
+    height:45,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom:20,
+    borderRadius:30,
+    margin: 25,
+    backgroundColor: "#4285F4",
+  },
 });

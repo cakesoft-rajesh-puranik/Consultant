@@ -12,7 +12,7 @@ const CustomProgressBar = ({ visible }) => (
                 justifyContent: "center"
             }}
         >
-            <View style={{ borderRadius: 10, backgroundColor: "white", padding: 25 }}>
+            <View style={{ borderRadius: 10, backgroundColor: "white", padding: 5 }}>
                 <ActivityIndicator size="large" />
             </View>
         </View>

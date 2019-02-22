@@ -1,26 +1,20 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
+import { Container, StyleSheet, Text, View, TextInput, TouchableHighlight, AsyncStorage, Alert, Image, ScrollView, TouchableOpacity} from 'react-native';
 import firebase from 'firebase';
 import Profile from './profile'
 import CustomProgressBar from '../components/progressBar';
+import { TextField } from 'react-native-material-textfield';
 
 export default class SignIn extends React.Component {
 
   static navigationOptions = {
-    title: 'SignIn',
-    headerStyle: {
-      backgroundColor: '#f4511e',
-    },
-    headerTintColor: '#fff',
-    headerTitleStyle: {
-      fontWeight: 'bold',
-    },
+      header: null,
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      textEmail: "nilesh@mailinator.com",
+      textEmail: "cdemo@mailinator.com",
       textPassword: "abcd1234",
       isProgressBar: false
     }
@@ -71,37 +65,51 @@ export default class SignIn extends React.Component {
       { cancelable: false });
   }
 
+  onPressSignUp = async () => {
+    console.log('SignUp');
+    this.props.navigation.navigate('SignUp');
+  }
+
   render() {
+    const { navigate } = this.props.navigation;
     return (
-      <View>
-        <View style={styles.container}>
+      <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps='handled'
+        >
+      <View style={styles.container}>
           <CustomProgressBar visible={this.state.isProgressBar}></CustomProgressBar>
           <Text style={fontsize = 50}></Text>
+          <Image
+          style={{width: 100, height: 100, justifyContent: 'center', alignItems: 'center', marginBottom: 30}}
+          source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}}
+        />
+        <View style={styles.inputContainer}>
+          <TextInput style={styles.inputs}
+              placeholder="Email"
+              keyboardType="email-address"
+              underlineColorAndroid='transparent'
+              onChangeText={(text) => this.setState({ textEmail: text })}/>
         </View>
-        <View>
-          <TextInput
-            placeholder="Enter Email"
-            style={{ padding: 10, marginTop: 40, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
-            onChangeText={(text) => this.setState({ textEmail: text })}
-          />
+        
+        <View style={styles.inputContainer}>
+          <TextInput style={styles.inputs}
+              placeholder="Password"
+              secureTextEntry={true}
+              underlineColorAndroid='transparent'
+              onChangeText={(text) => this.setState({ textPassword: text })}/>
         </View>
-        <View>
-          <TextInput
-            placeholder="Enter Password"
-            secureTextEntry={true}
-            style={{ padding: 10, marginTop: 20, marginLeft: 30, marginRight: 30, height: 40, borderColor: 'gray', borderWidth: 1, justifyContent: 'center', alignItems: 'center', }}
-            onChangeText={(text) => this.setState({ textPassword: text })}
-          />
-        </View>
-        <View>
-          <TouchableOpacity
-            style={{ marginTop: 20, marginLeft: 30, marginRight: 30, justifyContent: 'center', alignItems: 'center', }}
-            onPress={() => this.onPressSignIn()}
-          >
-            <Text style={{ color: 'purple' }}>SIGN IN</Text>
-          </TouchableOpacity>
-        </View>
+
+        <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onPressSignIn()}>
+          <Text style={styles.loginText}>Login</Text>
+        </TouchableHighlight>
+
+        <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', marginTop : 20 }} onPress={() => this.onPressSignUp()}>
+            <Text style={{ color: '#1f43bd' }}>Don't have an account? Sign up</Text>
+        </TouchableOpacity>
+
       </View>
+      </ScrollView>
     );
   }
 }
@@ -109,9 +117,44 @@ export default class SignIn extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginTop: 50,
+    backgroundColor: '#aec1ff',
   },
+  inputContainer: {
+      borderBottomColor: '#F5FCFF',
+      backgroundColor: '#FFFFFF',
+      borderRadius:5,
+      width:250,
+      height:45,
+      marginBottom:20,
+      flexDirection: 'row',
+      alignItems:'center'
+  },
+  inputs:{
+      height:45,
+      marginLeft:16,
+      marginRight:16,
+      borderBottomColor: '#FFFFFF',
+      flex:1,
+  },
+  logo: {
+    position: 'absolute',
+    width: 300,
+    height: 100
+},
+  buttonContainer: {
+    height:45,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width:250,
+    borderRadius:5,
+  },
+  loginButton: {
+    backgroundColor: "#1f43bd",
+  },
+  loginText: {
+    color: 'white',
+  }
 });
