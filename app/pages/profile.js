@@ -10,11 +10,11 @@ import {
   Image,
   ScrollView,
   BackHandler,
-  AppState,
+  AppState
 } from "react-native";
 import firebase from "firebase";
 import CustomProgressBar from "../components/progressBar";
-import { TextField } from 'react-native-material-textfield';
+import { TextField } from "react-native-material-textfield";
 
 export default class Profile extends React.Component {
   static navigationOptions = {
@@ -31,7 +31,7 @@ export default class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-    console.log('In constructor')
+    console.log("In constructor");
     this.state = {
       textEmail: " ",
       textPortal: " ",
@@ -42,73 +42,93 @@ export default class Profile extends React.Component {
       isPriceVisible: true,
       backHandler: " ",
       appState: AppState.currentState,
-      dataSend : true,
+      dataSend: true
     };
   }
 
-  
   componentDidMount() {
-    console.log('In componentDidMount')
+    console.log("In componentDidMount");
     this.setState({ isProgressBar: true });
     this.getUser();
     console.disableYellowBox = true;
-    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    AppState.addEventListener('change', this._handleAppStateChange);
-}
-
-componentWillUnmount() {
-  this.backHandler.remove()// = BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-  AppState.removeEventListener('change', this._handleAppStateChange);
-}
-
-_handleAppStateChange = (nextAppState) => {
-  if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-    console.log('App has come to the foreground!')
-    this.checkLoginAuth();
+    this.backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      this.handleBackButtonClick
+    );
+    AppState.addEventListener("change", this._handleAppStateChange);
   }
-  this.setState({appState: nextAppState});
-}
 
-checkLoginAuth = async () => {
-  const userId = await AsyncStorage.getItem('userID');
-  console.log('userId')
-  // This will switch to the App screen or Auth screen and this loading
-  // screen will be unmounted and thrown away.
-  this.props.navigation.navigate(userId ? 'App' : 'Auth');
-};
+  componentWillUnmount() {
+    this.backHandler.remove(); // = BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
 
-handleBackButtonClick() {
+  _handleAppStateChange = nextAppState => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("App has come to the foreground!");
+      this.checkLoginAuth();
+    }
+    this.setState({ appState: nextAppState });
+  };
+
+  checkLoginAuth = async () => {
+    const userId = await AsyncStorage.getItem("userID");
+    console.log("userId");
+    // This will switch to the App screen or Auth screen and this loading
+    // screen will be unmounted and thrown away.
+    this.props.navigation.navigate(userId ? "App" : "Auth");
+  };
+
+  handleBackButtonClick() {
     Alert.alert(
-    'Exit App',
-    'Exiting the application?',
-    [
-    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-    {text: 'OK', onPress: () => {BackHandler.exitApp(),
-    this.removeItemValue('userID') }},
-    ],
-    { cancelable: false }
-    )
-    return true;
-}
-
-updateData = dataSend => {
-  console.log(dataSend);
-  console.log("come back status: " + dataSend);
-  this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-};
-
-async removeItemValue(key) {
-  try {
-    await AsyncStorage.removeItem(key);
+      "Exit App",
+      "Exiting the application?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            BackHandler.exitApp(), this.removeItemValue("userID");
+          }
+        }
+      ],
+      { cancelable: false }
+    );
     return true;
   }
-  catch(exception) {
-    return false;
+
+  updateData = dataSend => {
+    console.log(dataSend);
+    console.log("come back status: " + dataSend);
+    this.backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      this.handleBackButtonClick
+    );
+  };
+
+  async removeItemValue(key) {
+    try {
+      await AsyncStorage.removeItem(key);
+      return true;
+    } catch (exception) {
+      return false;
+    }
   }
-}
+
+  Logout = async()=>{
+    await firebase.auth().signOut();  
+    this.props.navigation.navigate("SignIn");
+  }
 
   getUser = async () => {
-    console.log('In getUser')
+    console.log("In getUser");
     var userId = await AsyncStorage.getItem("userID");
     await firebase
       .database()
@@ -158,9 +178,9 @@ async removeItemValue(key) {
   onPressAppointment = async () => {
     this.state.availabilityORAppointment === "Availability"
       ? this.props.navigation.navigate("Availability", {
-        name: "from parent",
-        updateData: this.updateData
-      })
+          name: "from parent",
+          updateData: this.updateData
+        })
       : this.props.navigation.navigate("Appointment");
   };
 
@@ -171,62 +191,84 @@ async removeItemValue(key) {
   render() {
     return (
       <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps='handled'
-    >
-      <View style={styles.container}>
-      <CustomProgressBar visible={this.state.isProgressBar}></CustomProgressBar>
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <CustomProgressBar visible={this.state.isProgressBar} />
           <View style={styles.header}>
-          <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
-          <Text style={styles.name}>John Doe</Text>
+            <Image
+              style={styles.avatar}
+              source={{
+                uri: "https://bootdey.com/img/Content/avatar/avatar6.png"
+              }}
+            />
+            <Text style={styles.name}>John Doe</Text>
           </View>
           <View style={styles.body}>
             <View style={styles.textFieldContainer}>
-            <TextField
-              keyboardType='email-address'
-              label='Email'
-              value={this.state.textEmail}
-              editable = {false}
-            />
-
-            <TextField
-              keyboardType='phone-pad'
-              label='Phone Number'
-              value={this.state.textPhoneNumber}
-              editable = {false}
-            />
-
-            <TextField
-              keyboardType='default'
-              label='Portal'
-              value={this.state.textPortal}
-              editable = {false}
-            />
-            {this.state.isPriceVisible ? (
               <TextField
-              keyboardType='default'
-              label='Price'
-              value={this.state.isPriceVisible}
-              editable = {false}
-            />
-             ) : (
-               null
-            )}
-            
-            <TouchableOpacity style={styles.buttonContainer}
-             onPress={() => {this.backHandler.remove(),this.onPressAppointment()}}>
-                <Text style={{color : "#FFF"}}>{this.state.availabilityORAppointment}</Text>  
-              </TouchableOpacity>
-              
+                keyboardType="email-address"
+                label="Email"
+                value={this.state.textEmail}
+                editable={false}
+              />
+
+              <TextField
+                keyboardType="phone-pad"
+                label="Phone Number"
+                value={this.state.textPhoneNumber}
+                editable={false}
+              />
+
+              <TextField
+                keyboardType="default"
+                label="Portal"
+                value={this.state.textPortal}
+                editable={false}
+              />
               {this.state.isPriceVisible ? (
-              <TouchableOpacity style={styles.buttonContainer}
-             onPress={() => this.startChat()}>
-                <Text style={{color : "#FFF"}}>Chat</Text>  
-              </TouchableOpacity>  
+                <TextField
+                  keyboardType="default"
+                  label="Price"
+                  value={this.state.isPriceVisible}
+                  editable={false}
+                />
+              ) : null}
+
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() => {
+                  this.backHandler.remove(), this.onPressAppointment();
+                }}
+              >
+                <Text style={{ color: "#FFF" }}>
+                  {this.state.availabilityORAppointment}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() => {
+                  this.Logout();
+                }}
+              >
+                <Text style={{ color: "#FFF" }}>
+                 Logout
+                </Text>
+              </TouchableOpacity>
+
+              {this.state.isPriceVisible ? (
+                <TouchableOpacity
+                  style={styles.buttonContainer}
+                  onPress={() => this.startChat()}
+                >
+                  <Text style={{ color: "#FFF" }}>Chat</Text>
+                </TouchableOpacity>
               ) : null}
             </View>
-        </View>
-        {/* {this.state.isPriceVisible ? (
+          </View>
+          {/* {this.state.isPriceVisible ? (
           <TouchableOpacity
             style={{
               flexDirection: "row",
@@ -240,16 +282,15 @@ async removeItemValue(key) {
             <Text style={{ color: "purple" }}>Chat</Text>
           </TouchableOpacity>
         ) : null} */}
-      </View>
+        </View>
       </ScrollView>
-    
     );
   }
 }
 const styles = StyleSheet.create({
-  header:{
+  header: {
     backgroundColor: "#4285F4",
-    height:180,
+    height: 180
   },
   avatar: {
     width: 130,
@@ -257,51 +298,50 @@ const styles = StyleSheet.create({
     borderRadius: 63,
     borderWidth: 4,
     borderColor: "white",
-    marginBottom:10,
-    alignSelf:'center',
-    position: 'absolute',
-    marginTop:10
+    marginBottom: 10,
+    alignSelf: "center",
+    position: "absolute",
+    marginTop: 10
   },
-  name:{
-    fontSize:22,
-    color:"#FFF",
-    fontWeight:'600',
-    alignSelf:'center',
-    marginTop:140,
+  name: {
+    fontSize: 22,
+    color: "#FFF",
+    fontWeight: "600",
+    alignSelf: "center",
+    marginTop: 140
   },
-  body:{
-    marginTop:20,
-    margin: 20,
+  body: {
+    marginTop: 20,
+    margin: 20
   },
   bodyContent: {
     flex: 1,
-    alignItems: 'center',
-    padding:30,
+    alignItems: "center",
+    padding: 30
   },
-  info:{
-    fontSize:16,
+  info: {
+    fontSize: 16,
     color: "#4285F4",
-    marginTop:10
+    marginTop: 10
   },
-  description:{
-    fontSize:16,
+  description: {
+    fontSize: 16,
     color: "#696969",
-    marginTop:10,
-    textAlign: 'center'
+    marginTop: 10,
+    textAlign: "center"
   },
   buttonContainer: {
-    marginTop:10,
-    height:45,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom:20,
-    borderRadius:30,
+    marginTop: 10,
+    height: 45,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+    borderRadius: 30,
     margin: 25,
-    backgroundColor: "#4285F4",
+    backgroundColor: "#4285F4"
   },
   textFieldContainer: {
-    marginTop: 10,
-  },
+    marginTop: 10
+  }
 });
-
