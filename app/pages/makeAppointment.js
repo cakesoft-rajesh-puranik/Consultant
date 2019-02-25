@@ -43,7 +43,9 @@ export default class MakeAppointment extends React.Component {
     });
   }
 
-  componentWillMount() {}
+  componentWillMount() {
+    this.getData();
+  }
 
   startChat = async () => {
     await AsyncStorage.setItem("consultantId", this.state.id);
@@ -60,46 +62,69 @@ export default class MakeAppointment extends React.Component {
     this.getAppointments(this.state.date);
   };
 
-  getAppointments = async date => {
-      await firebase
+  getAppointments = async()=> {
+    await firebase
       .database()
       .ref("consultants/" + this.state.id)
       .child("availabilities")
-      .child(date)
       .on("value", snapshot => {
-        console.log("GetApt "+snapshot);
-        if (snapshot.exists()) {   
+        console.log("GetApt " + snapshot);
+        if (snapshot.exists()) {
           snapshot.forEach(element => {
             //console.log("element "+element.val());
-            var val = element.val();
-            var timeSlot = val.timeSlot;
+            //var key = element.key;
             //console.log("element "+timeSlot);
-            console.log("element "+element.key);
-            const obj = { time: timeSlot, id:element.key};
-            const newArray = this.state.slot.slice(); // Create a copy
-            newArray.push(obj); // Push the object
-            //console.log("Array "+newArray);
-            this.setState({ slot: newArray });
-            //console.log("List "+this.state.slot);
-            this.setState({ isProgressBar: false });  
-          });            
-        }else{
+            console.log("element " + element.key);
+            //const obj = { title: element.key };
+            element.forEach(item => {
+              var val = item.val();
+              var timeSlot = val.timeSlot;
+              console.log(timeSlot);
+              const time = { date: element.key, time: timeSlot, id: item.key };
+              const mainArray = this.state.slot.slice(); // Create a copy
+              mainArray.push(time); // Push the object
+              console.log(mainArray);
+              this.setState({ slot: mainArray });
+              //console.log("List "+this.state.slot);
+              //this.setState({ isProgressBar: false });
+            });
+            this.setState({ isProgressBar: false });
+          });
+        } else {
           Alert.alert(
-            'Alert',
-            'NO TimeSlot',
-            [
-              {text: 'OK', onPress: () => console.log('OK Pressed')},
-            ],
-            {cancelable: false},
+            "Alert",
+            "NO TimeSlot",
+            [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+            { cancelable: false }
           );
-          this.setState({ isProgressBar: false });       
+          this.setState({ isProgressBar: false });
         }
       });
   };
 
+  //TODO for SectionList
+  Data = async () => {
+    var date;
+    var slotArray = [];
+    var tempArray = [];
+    var time; 
+    var obj;
+    this.state.slot.forEach(item => {   
+      if(slotArray.length === 0){
+      time = { timeSlot: item.timeSlot };
+      tempArray = slotArray.slice();
+      tempArray.push(time);
+      obj = { title: item.title, data: tempArray };
+      slotArray.push(obj);
+      console.log(slotArray);
+      }else{
+      }      
+    });
+  };
+
   onPressCell = async item => {
     this.setState({ isProgressBar: true });
-    //console.log("item " + item.id);
+    console.log("item " + item.id);
     Alert.alert(
       "Alert",
       "Booked Appointment",
@@ -109,11 +134,13 @@ export default class MakeAppointment extends React.Component {
 
     this.addAppointmentData(this.state.id, item);
 
+    console.log(item.date);
+    console.log(item.id);
     await firebase
       .database()
       .ref("consultants/" + this.state.id)
       .child("availabilities")
-      .child(this.state.date)
+      .child(item.date)
       .child(item.id)
       .remove();
     this.getAppointments();
@@ -124,13 +151,14 @@ export default class MakeAppointment extends React.Component {
     var userId = await AsyncStorage.getItem("userID");
     //console.log(userId);
     //console.log(consultant_id);
+    //console.log(item.time);
     await firebase
       .database()
       .ref("bookedAppointment")
       .child(consultant_id)
       .child("Student")
       .child(userId)
-      .child(this.state.date)
+      .child(item.date)
       .push({
         timeSlot: item.time
       });
@@ -139,61 +167,35 @@ export default class MakeAppointment extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-      <View style={{justifyContent:"center", alignItems: "center" }}>
-        <Text style={{ marginBottom: 20, color: "purple"}}>
-          On Tap of Time Appointment will be booked
-        </Text>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ marginBottom: 20, color: "purple" }}>
+            On Tap of Time Appointment will be booked
+          </Text>
         </View>
         <View>
           <CustomProgressBar visible={this.state.isProgressBar} />
         </View>
-        <View style={styles.calendarStyle}>
-        <View style={{ margin: 5 }}>
-          <DatePicker
-            date={this.state.date}
-            showIcon={true}
-            placeholder="Select Date"
-            mode="date"
-            format="DD-MM-YYYY"
-            customStyles={{
-              dateInput: {
-                borderWidth: 0,
-                height: 50,
-                width: 200
-              },
-              dateText: {
-                marginTop: 5,
-                color: "black",
-                fontSize: 18
-              },
-              placeholderText: {
-                marginTop: 5,
-                right: 10,
-                color: "black",
-                fontSize: 18
-              }
-            }}
-            onDateChange={date => {
-              this.props.onDateChange && this.props.onDateChange(date);
-              this.setState({ date });
-            }}
-            placeholderTextColor="white"
-            underlineColorAndroid={"rgba(0,0,0,0)"}
-            style={{
-              height: 50,
-              width: 200,
-              justifyContent: "center",
-              alignItems: "center",
-              paddingLeft: 15,
-              borderRadius: 4,
-              borderColor: "gray"
-            }}
-          />
-        </View>
-        <TouchableOpacity onPress={() => this.getData()} style={styles.buttonContainer}>
-            <Text  style={{color : "#FFF"}}>Get TimeSlot</Text>
-          </TouchableOpacity>
-        </View>
+
+        <FlatList
+          data={this.state.slot}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => this.onPressCell(item)}
+              style={{ alignSelf: "stretch" }}
+            >
+              <CustomRowMakeApt 
+              date={item.date}
+              time={item.time}
+               />
+            </TouchableOpacity>
+          )}
+        />
+
+        {/* <SectionList
+       renderSectionHeader={ ({section}) => <Text style={styles.SectionHeader}> { section.title } </Text> }
+       renderItem={ ({item}) => <Text style={styles.SectionListItemS} onPress={this.GetSectionListItem.bind(this, item)}> { item } </Text> }
+       keyExtractor={ (item, index) => index }
+      /> */}
 
         <TouchableOpacity
           activeOpacity={0.7}
@@ -211,18 +213,6 @@ export default class MakeAppointment extends React.Component {
             style={styles.FloatingButtonStyle}
           />
         </TouchableOpacity>
-
-        <FlatList
-          data={this.state.slot}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => this.onPressCell(item)}
-              style={{ alignSelf: "stretch" }}
-            >
-              <CustomRowMakeApt time={item.time} />
-            </TouchableOpacity>
-          )}
-        />
       </View>
     );
   }
@@ -236,7 +226,7 @@ const styles = StyleSheet.create({
 
   calendarStyle: {
     flexDirection: "row",
-    backgroundColor: "#FCFCFC",
+    backgroundColor: "#FCFCFC"
   },
 
   TouchableOpacityStyle: {
@@ -257,16 +247,16 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    marginTop:10,
-    height:45,
+    marginTop: 10,
+    height: 45,
     //flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     //marginBottom:20,
-    borderRadius:5,
+    borderRadius: 5,
     margin: 10,
-    paddingLeft:5,
-    paddingRight:5,
-    backgroundColor: "#4285F4",
+    paddingLeft: 5,
+    paddingRight: 5,
+    backgroundColor: "#4285F4"
   }
 });

@@ -18,12 +18,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#000',
         marginTop: 5,
-    }
+    },
 });
 
-const CustomRowMakeApt = ({ time }) => (
+const CustomRowMakeApt = ({ date, time }) => (
     <View style={styles.container}>
         <View style={styles.container_text}>
+        <Text style={styles.email}>
+                Date:
+            </Text>
+            <Text style={styles.PhoneNumber}>
+                {date}
+            </Text>
             <Text style={styles.email}>
                 TimeSlot:
             </Text>
