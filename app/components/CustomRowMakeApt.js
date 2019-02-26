@@ -21,15 +21,9 @@ const styles = StyleSheet.create({
     },
 });
 
-const CustomRowMakeApt = ({ date, time }) => (
+const CustomRowMakeApt = ({ time }) => (
     <View style={styles.container}>
         <View style={styles.container_text}>
-        <Text style={styles.email}>
-                Date:
-            </Text>
-            <Text style={styles.PhoneNumber}>
-                {date}
-            </Text>
             <Text style={styles.email}>
                 TimeSlot:
             </Text>

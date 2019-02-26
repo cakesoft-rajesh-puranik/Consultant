@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Alert,
   AsyncStorage,
-  Image
+  Image,
+  SectionList
 } from "react-native";
 import firebase from "firebase";
-import DatePicker from "react-native-datepicker";
 import CustomProgressBar from "../components/progressBar";
 import CustomRowMakeApt from "../components/CustomRowMakeApt";
 
@@ -30,20 +30,13 @@ export default class MakeAppointment extends React.Component {
     super(props);
     this.state = {
       slot: [],
+      slots: [],
       id: this.props.navigation.state.params.id,
-      selectedDate: "",
       isProgressBar: false
     };
-    this.onDayPress = this.onDayPress.bind(this);
   }
 
-  onDayPress(day) {
-    this.setState({
-      selectedDate: day
-    });
-  }
-
-  componentWillMount() {
+  componentDidMount(){
     this.getData();
   }
 
@@ -52,44 +45,39 @@ export default class MakeAppointment extends React.Component {
     this.props.navigation.navigate("Conversation");
   };
 
-  getData = async () => {
-    // for(var i = this.state.slot.length;i>0;i--){
-    //   this.state.slot.pop()
-    // }
-    // console.log("cleared "+this.state.slot);
+  getData = () => {
     this.setState({ isProgressBar: true });
     //console.log(this.state.date);
-    this.getAppointments(this.state.date);
+    this.getAppointments();
   };
 
-  getAppointments = async()=> {
-    await firebase
+  getAppointments = async () => {
+    try {
+      await firebase
       .database()
       .ref("consultants/" + this.state.id)
       .child("availabilities")
       .on("value", snapshot => {
-        console.log("GetApt " + snapshot);
+        console.log(snapshot);
         if (snapshot.exists()) {
+          var mainArray = [];
           snapshot.forEach(element => {
-            //console.log("element "+element.val());
+            //console.log(element.val());
             //var key = element.key;
             //console.log("element "+timeSlot);
-            console.log("element " + element.key);
+            //console.log("element " + element.key);
             //const obj = { title: element.key };
             element.forEach(item => {
               var val = item.val();
               var timeSlot = val.timeSlot;
-              console.log(timeSlot);
+              //console.log(timeSlot);
               const time = { date: element.key, time: timeSlot, id: item.key };
-              const mainArray = this.state.slot.slice(); // Create a copy
-              mainArray.push(time); // Push the object
+              mainArray.push(time);
               console.log(mainArray);
-              this.setState({ slot: mainArray });
-              //console.log("List "+this.state.slot);
-              //this.setState({ isProgressBar: false });
             });
             this.setState({ isProgressBar: false });
           });
+          this.Data(mainArray);
         } else {
           Alert.alert(
             "Alert",
@@ -100,26 +88,43 @@ export default class MakeAppointment extends React.Component {
           this.setState({ isProgressBar: false });
         }
       });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  //TODO for SectionList
-  Data = async () => {
-    var date;
-    var slotArray = [];
-    var tempArray = [];
-    var time; 
-    var obj;
-    this.state.slot.forEach(item => {   
-      if(slotArray.length === 0){
-      time = { timeSlot: item.timeSlot };
-      tempArray = slotArray.slice();
-      tempArray.push(time);
-      obj = { title: item.title, data: tempArray };
-      slotArray.push(obj);
-      console.log(slotArray);
-      }else{
-      }      
-    });
+  //SectionList
+  Data = async (Slot) => {
+    var timeSlot = [];
+    var date = [];
+    var array = [];
+    for (var i = 0; i < Slot.length; i++) {
+      var data = Slot[i];
+      //console.log(data['date'])
+      date.push(data["date"]);
+    }
+    //console.log(date);
+    var uniqueDate = Array.from(new Set(date));
+    //console.log(uniqueDate);
+
+    for (var i = 0; i < uniqueDate.length; i++) {
+      var obj;
+      var _date = uniqueDate[i];
+      for (var j = 0; j < Slot.length; j++) {
+        var data = Slot[j];
+        //console.log(data['time'])
+        //console.log(__date)
+        if (uniqueDate[i] === data["date"]) {
+          var obj = {time:data["time"],date: data["date"],id:data['id']}
+          timeSlot.push(obj);
+        }
+      }
+      obj = { date: _date,  data: timeSlot };
+      array.push(obj);
+      timeSlot = [];
+    }
+    this.setState({ slots: array });
+    //console.log(array);
   };
 
   onPressCell = async item => {
@@ -131,9 +136,7 @@ export default class MakeAppointment extends React.Component {
       [{ text: "OK", onPress: () => {} }],
       { cancelable: false }
     );
-
     this.addAppointmentData(this.state.id, item);
-
     console.log(item.date);
     console.log(item.id);
     await firebase
@@ -176,26 +179,21 @@ export default class MakeAppointment extends React.Component {
           <CustomProgressBar visible={this.state.isProgressBar} />
         </View>
 
-        <FlatList
-          data={this.state.slot}
+        <SectionList
+          sections={this.state.slots}
+          renderSectionHeader={({ section }) => (
+            <Text style={styles.SectionHeader}> {section.date} </Text>
+          )}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => this.onPressCell(item)}
               style={{ alignSelf: "stretch" }}
             >
-              <CustomRowMakeApt 
-              date={item.date}
-              time={item.time}
-               />
+              <CustomRowMakeApt time={item.time} />
             </TouchableOpacity>
           )}
+          keyExtractor={(item, index) => index}
         />
-
-        {/* <SectionList
-       renderSectionHeader={ ({section}) => <Text style={styles.SectionHeader}> { section.title } </Text> }
-       renderItem={ ({item}) => <Text style={styles.SectionListItemS} onPress={this.GetSectionListItem.bind(this, item)}> { item } </Text> }
-       keyExtractor={ (item, index) => index }
-      /> */}
 
         <TouchableOpacity
           activeOpacity={0.7}
@@ -258,5 +256,15 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
     backgroundColor: "#4285F4"
+  },
+
+  SectionHeader:{
+    backgroundColor : '#1f43bd',
+    fontSize : 20,
+    padding: 5,
+    color: '#fff',
+    fontWeight: 'bold'
   }
+
+
 });
