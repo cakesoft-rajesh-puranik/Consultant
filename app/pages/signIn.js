@@ -16,7 +16,9 @@ export default class SignIn extends React.Component {
     this.state = {
       textEmail: "cdemo@mailinator.com",
       textPassword: "abcd1234",
-      isProgressBar: false
+      isProgressBar: false,
+      emailError: null,
+      passError: null,
     }
   }
 
@@ -70,6 +72,40 @@ export default class SignIn extends React.Component {
     this.props.navigation.navigate('SignUp');
   }
 
+  checkEmail = (text) => {
+    console.log(text);
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
+    if(text !== ""){
+    if(reg.test(text) === false)
+    {
+    console.log("Email is Not Correct");
+    this.setState(() => ({ emailError: "Please enter valid email"}));
+    this.setState({textEmail: text})
+    return false;
+    }
+    else {
+      this.setState({textEmail: text})
+      this.setState(() => ({ emailError: null}));
+      console.log("Email is Correct");
+    }
+  }
+  else{
+    this.setState(() => ({ emailError: "Email required"}));
+    return false;
+  }
+  }
+
+  checkPassword = async () => {
+    if (this.state.textPassword.trim() === "") {
+      this.setState(() => ({ passError: "Password required"}));
+      return false;
+    } 
+    else{
+      this.setState(() => ({ passError: null}));
+      return true;
+    }
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     return (
@@ -89,16 +125,26 @@ export default class SignIn extends React.Component {
               placeholder="Email"
               keyboardType="email-address"
               underlineColorAndroid='transparent'
-              onChangeText={(text) => this.setState({ textEmail: text })}/>
+              onChangeText={(text) => this.checkEmail(text)}
+             onBlur={() => this.checkEmail(this.state.textEmail)}
+            />
         </View>
-        
+        {!!this.state.emailError && (
+            <Text style={styles.errorContainer}>{this.state.emailError}</Text>
+        )}
+
         <View style={styles.inputContainer}>
           <TextInput style={styles.inputs}
               placeholder="Password"
               secureTextEntry={true}
               underlineColorAndroid='transparent'
-              onChangeText={(text) => this.setState({ textPassword: text })}/>
-        </View>
+              onChangeText={(text) => {this.setState({ textPassword: text }), this.setState({ passError: "" })}}
+          onBlur={() => this.checkPassword()}
+          />
+    </View>
+    {!!this.state.passError && (
+            <Text style={styles.errorContainer}>{this.state.passError}</Text>
+    )}
 
         <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onPressSignIn()}>
           <Text style={styles.loginText}>Login</Text>
@@ -121,13 +167,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#aec1ff',
   },
+  errorContainer: {
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    marginTop : -5,
+    marginBottom: 5,
+    color: '#f30000',
+    width:250,
+  },
   inputContainer: {
       borderBottomColor: '#F5FCFF',
       backgroundColor: '#FFFFFF',
       borderRadius:5,
       width:250,
       height:45,
-      marginBottom:20,
+      marginBottom:10,
       flexDirection: 'row',
       alignItems:'center'
   },

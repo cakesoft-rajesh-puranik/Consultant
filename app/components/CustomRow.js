@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-        padding: 10,
         marginLeft: 16,
         marginRight: 16,
         marginTop: 8,
@@ -17,17 +16,38 @@ const styles = StyleSheet.create({
     container_text: {
         flex: 1,
         flexDirection: 'column',
-        marginLeft: 20,
+        marginLeft: 10,
         justifyContent: 'center',
     },
-    Output: {
-        fontSize: 15,
+    OutputEmail: {
+        fontSize: 18,
+        color: '#000',
+        marginLeft : 10,
+        marginBottom : 10,
+    },
+    OutputPhone: {
+        fontSize: 14,
+        color: '#838383',
+        marginLeft : 10,
+        marginBottom : 10,
+    },
+    OutputPrice: {
+        fontSize: 18,
         color: '#1f43bd',
         marginLeft : 10,
+        marginBottom : 10,
     },
-    inputIcon:{
+    inputIconPrice:{
         width:15,
         height:15,
+        tintColor: '#1f43bd',
+        justifyContent: 'center',
+        marginRight : 10,
+      },
+      inputIconPhone:{
+        width:15,
+        height:15,
+        tintColor: '#838383',
         justifyContent: 'center',
         marginRight : 10,
       },
@@ -36,27 +56,26 @@ const styles = StyleSheet.create({
 const CustomRow = ({ email, PhoneNumber, Price }) => (
     <View style={styles.container}>
     <Image
-          style={{width: 50, height: 50, justifyContent: 'center', alignItems: 'center'}}
+          style={{width: 100 ,justifyContent: 'center', alignItems: 'center'}}
           source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}}
         />
         <View style={styles.container_text}>
         <View style={{flexDirection : 'row',}}>
-            <Text style={styles.Output}>
-            <Image style={styles.inputIcon} source={{uri: 'https://img.icons8.com/material-outlined/000000/filled-message.png'}}/>
+            <Text style={styles.OutputEmail}>
             {email}
             </Text>
         </View>
                 
         <View style={{flexDirection : 'row',}}>
-            <Text style={styles.Output}>
-            <Image style={styles.inputIcon} source={{uri: 'https://img.icons8.com/material/000000/phone.png'}}/>
+            <Text style={styles.OutputPhone}>
+            <Image style={styles.inputIconPhone} source={{uri: 'https://img.icons8.com/material/000000/phone.png'}}/>
             {PhoneNumber}
             </Text>
         </View>
             
         {Price ? (<View style={{flexDirection : 'row',}}>    
-            <Text style={styles.Output}>
-            <Image style={styles.inputIcon} source={{uri: 'https://img.icons8.com/material/000000/rupee.png'}}/>
+            <Text style={styles.OutputPrice}>
+            <Image style={styles.inputIconPrice} source={{uri: 'https://img.icons8.com/material/000000/rupee.png'}}/>
                 {Price}
             </Text>
         </View>) : (

@@ -37,6 +37,7 @@ export default class Profile extends React.Component {
       textPortal: " ",
       textPhoneNumber: " ",
       textPrice: " ",
+      textName: " ",
       availabilityORAppointment: "",
       isProgressBar: false,
       isPriceVisible: true,
@@ -142,6 +143,7 @@ export default class Profile extends React.Component {
           textPortal: value.val()["portal"],
           textPhoneNumber: value.val()["PhoneNumber"],
           textPrice: value.val()["price"],
+          textName: value.val()["Name"],
           availabilityORAppointment:
             portal === "Consultant" ? "Availability" : "Book Appointment"
         });
@@ -197,13 +199,8 @@ export default class Profile extends React.Component {
         <View style={styles.container}>
           <CustomProgressBar visible={this.state.isProgressBar} />
           <View style={styles.header}>
-            <Image
-              style={styles.avatar}
-              source={{
-                uri: "https://bootdey.com/img/Content/avatar/avatar6.png"
-              }}
-            />
-            <Text style={styles.name}>John Doe</Text>
+          <Image style={styles.avatar} source={{uri: 'https://bootdey.com/img/Content/avatar/avatar6.png'}}/>
+          <Text style={styles.name}>{this.state.textName}</Text>
           </View>
           <View style={styles.body}>
             <View style={styles.textFieldContainer}>

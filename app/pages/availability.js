@@ -9,11 +9,13 @@ import {
   Button,
   BackHandler,
   AppState,
+  Dimensions
 } from "react-native";
 import DatePicker from "react-native-datepicker";
-import { Calendar } from "react-native-calendars";
+import CustomProgressBar from "../components/progressBar";
 import MultiSelect from "react-native-multiple-select";
 import firebase from "firebase";
+var deviceHeight = Dimensions.get("window").height;
 
 export default class Availability extends Component {
   static navigationOptions = {
@@ -33,44 +35,51 @@ export default class Availability extends Component {
       selectedItems: [],
       selectedItemsValue: [],
       selectedDate: "",
-      status: true
+      status: true,
+      isProgressBar: false
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.onDayPress = this.onDayPress.bind(this);
   }
 
   componentDidMount() {
-    console.log('In componentDidMount')
-    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    AppState.addEventListener('change', this._handleAppStateChange);
-}
-
-componentWillUnmount() {
-  this.backHandler.remove()
-  AppState.removeEventListener('change', this._handleAppStateChange);
-}
-
-handleAppStateChange = (nextAppState) => {
-  if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-    console.log('App has come to the foreground!')
-    this.checkLoginAuth();
+    console.log("In componentDidMount");
+    this.backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      this.handleBackButtonClick
+    );
+    AppState.addEventListener("change", this._handleAppStateChange);
   }
-  this.setState({appState: nextAppState});
-}
 
-handleBackButtonClick() {
-  this.props.navigation.state.params.updateData(this.state.status);
-  this.props.navigation.goBack();
-  return true;
-}
+  componentWillUnmount() {
+    this.backHandler.remove();
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
 
-checkLoginAuth = async () => {
-  const userId = await AsyncStorage.getItem('userID');
+  handleAppStateChange = nextAppState => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.log("App has come to the foreground!");
+      this.checkLoginAuth();
+    }
+    this.setState({ appState: nextAppState });
+  };
 
-  // This will switch to the App screen or Auth screen and this loading
-  // screen will be unmounted and thrown away.
-  this.props.navigation.navigate(userId ? 'App' : 'Auth');
-};
+  handleBackButtonClick() {
+    this.props.navigation.state.params.updateData(this.state.status);
+    this.props.navigation.goBack();
+    return true;
+  }
+
+  checkLoginAuth = async () => {
+    const userId = await AsyncStorage.getItem("userID");
+
+    // This will switch to the App screen or Auth screen and this loading
+    // screen will be unmounted and thrown away.
+    this.props.navigation.navigate(userId ? "App" : "Auth");
+  };
 
   onDayPress(day) {
     this.setState({
@@ -89,7 +98,9 @@ checkLoginAuth = async () => {
     console.log(this.state.date);
     console.log(this.state.selectedItems);
     console.log(this.state.fixedPrice);
+
     for (let time of this.state.selectedItems) {
+      this.setState({ isProgressBar: true });
       console.log(time);
       this.addAppointmentData(
         consultant.uid,
@@ -110,6 +121,8 @@ checkLoginAuth = async () => {
       .push({
         timeSlot: slot
       });
+    this.setState({ isProgressBar: false });
+    this.props.navigation.navigate("Profile");
   }
 
   items = [
@@ -163,6 +176,8 @@ checkLoginAuth = async () => {
     const { selectedItems } = this.state;
     return (
       <View style={styles.container}>
+        <CustomProgressBar visible={this.state.isProgressBar} />
+        <Text style={(fontsize = 50)} />
         <StatusBar barStyle="light-content" />
         <View style={{ margin: 5 }}>
           <DatePicker
@@ -206,38 +221,38 @@ checkLoginAuth = async () => {
             }}
           />
         </View>
-        <MultiSelect
-          hideTags
-          items={this.items}
-          uniqueKey="id"
-          ref={component => {
-            this.multiSelect = component;
-          }}
-          onSelectedItemsChange={this.onSelectedItemsChange}
-          selectedItems={selectedItems}
-          selectText="Pick Time Slot"
-          searchInputPlaceholderText="Search Time Slot"
-          onChangeInput={text => console.log(text)}
-          tagRemoveIconColor="#CCC"
-          tagBorderColor="#CCC"
-          tagTextColor="#CCC"
-          selectedItemTextColor="#CCC"
-          selectedItemIconColor="#CCC"
-          itemTextColor="#000"
-          displayKey="value"
-          searchInputStyle={{ color: "#CCC" }}
-          submitButtonColor="#CCC"
-          submitButtonText="Submit"
-        />
-        <TouchableOpacity style={styles.buttonContainer}
-             onPress={() => this.onPressAddAppointment()}>
-                <Text style={{color : "#FFF"}}>Add Appointment</Text>  
-              </TouchableOpacity>
-        {/* <Button
+        <View style={{ flex: 1, marginLeft: 25, marginRight: 25 }}>
+          <MultiSelect
+            hideTags
+            items={this.items}
+            uniqueKey="id"
+            ref={component => {
+              this.multiSelect = component;
+            }}
+            onSelectedItemsChange={this.onSelectedItemsChange}
+            selectedItems={selectedItems}
+            selectText="Pick Time Slot"
+            searchInputPlaceholderText="Search Time Slot"
+            onChangeInput={text => console.log(text)}
+            tagRemoveIconColor="#CCC"
+            tagBorderColor="#CCC"
+            tagTextColor="#CCC"
+            selectedItemTextColor="#CCC"
+            selectedItemIconColor="#CCC"
+            itemTextColor="#000"
+            displayKey="value"
+            searchInputStyle={{ color: "#CCC" }}
+            submitButtonColor="#CCC"
+            submitButtonText="Submit"
+            hideSubmitButton={true}
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.buttonContainer}
           onPress={() => this.onPressAddAppointment()}
-          title="Add Appointment"
-          color="#4285F4"
-        /> */}
+        >
+          <Text style={{ color: "#FFF" }}>Add Appointment</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -255,14 +270,17 @@ const styles = StyleSheet.create({
     height: 350
   },
   buttonContainer: {
-    marginTop:10,
-    height:45,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom:20,
-    borderRadius:30,
+    marginTop: 10,
+    height: 45,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+    borderRadius: 30,
     margin: 25,
-    backgroundColor: "#4285F4",
+    backgroundColor: "#4285F4"
   },
+  rootView: {
+    height: deviceHeight / 2
+  }
 });
